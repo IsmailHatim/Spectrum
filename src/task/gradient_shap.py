@@ -25,11 +25,12 @@ def show_gradient_shap(model, image: torch.Tensor, device, num_samples=50) -> No
     
     model.eval()
     image = image.to(device)
+    prob = model(image).item()
 
     # Use GradientSHAP explainer
     explainer = shap.GradientExplainer(model, torch.randn(1, 3, 256, 256).to(device))
 
-    # Generated SHAP values with noise
+    # Generated SHAP values with
     shap_values = explainer.shap_values(image, nsamples=num_samples)
 
     # Convert SHAP values into aggregated heatmap
@@ -49,6 +50,6 @@ def show_gradient_shap(model, image: torch.Tensor, device, num_samples=50) -> No
 
     ax[1].imshow(image.cpu().squeeze().permute(1, 2, 0))
     ax[1].imshow(shap_heatmap_resized, cmap='jet', alpha=0.5)
-    ax[1].set_title(f"GradientSHAP Heatmap")
+    ax[1].set_title(f"GradientSHAP Heatmap (Defective Prob: {prob*100:.1f}%)")
 
     plt.show()
