@@ -11,7 +11,7 @@ def train_model(model, train_loader, num_epochs, criterion, optimizer, device):
         correct_train = 0
         total_train = 0
         
-        for images, labels in tqdm(train_loader):
+        for images, labels, _ in tqdm(train_loader):
             images, labels = images.to(device), labels.to(device, dtype=torch.float32)
             
             optimizer.zero_grad()

@@ -6,7 +6,7 @@ def evaluate_model(model, test_loader, device):
     correct = 0
     total = 0
 
-    for images, labels in test_loader:
+    for images, labels, _ in test_loader:
         images, labels = images.to(device), labels.to(device, dtype=torch.float32)
         outputs = model(images).squeeze()
         
