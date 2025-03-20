@@ -25,7 +25,11 @@ class DAGMDataset(Dataset):
             img_path = os.path.join(img_dir, img_name)
             label_path = os.path.join(label_dir, img_name.replace(".PNG", "_label.PNG"))
             
-            label = 1 if os.path.exists(label_path) else 0
+            if os.path.exists(label_path):
+                label = 1 
+            else:
+                label = 0
+                label_path = os.path.join(label_dir, "dummy.PNG")
             
             self.data.append((img_path, label))
 
