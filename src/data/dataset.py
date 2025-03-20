@@ -29,19 +29,21 @@ class DAGMDataset(Dataset):
                 label = 1 
             else:
                 label = 0
-                label_path = os.path.join(label_dir, "dummy.PNG")
+                label_path = os.path.join(label_dir, "dummy.png")
             
-            self.data.append((img_path, label))
+            self.data.append((img_path, label, label_path))
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        img_path, label = self.data[idx]
+        img_path, label, label_path = self.data[idx]
         
         img = Image.open(img_path).convert("RGB")
+        label_img = Image.open(label_path).convert("RGB")
 
         if self.transform:
             img = self.transform(img)
+            label_img = self.transform(label_img)
 
-        return img, label
+        return img, label, label_img
