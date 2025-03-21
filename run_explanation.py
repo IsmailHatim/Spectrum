@@ -39,6 +39,8 @@ def main(args):
     else:
         raise ValueError(f"Model {args.model_name} is not supported yet.")
     
+    
+    
     model.load_model(MODEL_PATH)
     
     model.eval()
@@ -54,6 +56,9 @@ def main(args):
     iou_score = compute_iou_score(explanation_thresholded, label_image)
     f1_score = compute_f1_score(explanation_thresholded, label_image)
     # auc_score = compute_auc_score(explanation, label_image)
+    
+    if args.method == 'saliency':
+        image = image.detach()
     
     print("+" + "-" * 50 + "+")
     print(f'True Label: {label}')
