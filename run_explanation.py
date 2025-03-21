@@ -39,6 +39,8 @@ def main(args):
     else:
         raise ValueError(f"Model {args.model_name} is not supported yet.")
     
+    model.load_model(MODEL_PATH)
+    
     model.eval()
     output = model(image.to(device))
     prob = output.item()
