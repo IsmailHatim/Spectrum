@@ -3,7 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
 
-def show_gradcam(model, image: torch.Tensor, conv_layer_index, device) -> None:
+def show_gradcam(model, image: torch.Tensor, device, threshold=0.5, conv_layer_index=-2) -> None:
     """Shows Grad-CAM heatmap for the prediction of an input image using the last conv layer of DenseNet.
 
     Parameters
@@ -37,7 +37,6 @@ def show_gradcam(model, image: torch.Tensor, conv_layer_index, device) -> None:
     model.eval()
     image = image.to(device)
     output = model(image)
-    prob = output.item()
 
     target = output[0, 0]
 
@@ -58,14 +57,6 @@ def show_gradcam(model, image: torch.Tensor, conv_layer_index, device) -> None:
     gradcam /= gradcam.max()
     
     gradcam_resized = cv2.resize(gradcam.cpu().numpy(), (image.shape[2], image.shape[3]))
+    gradcam_thresholded = gradcam_resized > threshold
 
-    # Plot the result
-    fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-    ax[0].imshow(image.cpu().squeeze().permute(1, 2, 0))
-    ax[0].set_title("Input Image")
-
-    ax[1].imshow(image.cpu().squeeze().permute(1, 2, 0))
-    ax[1].imshow(gradcam_resized, cmap='jet', alpha=0.5)
-    ax[1].set_title(f"Grad-CAM (Defective Prob: {prob*100:.1f}%)")
-
-    plt.show()
+    return gradcam_resized, gradcam_thresholded

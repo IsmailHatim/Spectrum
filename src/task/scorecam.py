@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
 
-def show_scorecam(model, image: torch.Tensor, conv_layer_index, device, num_samples=100) -> None:
+def show_scorecam(model, image: torch.Tensor, device, threshold, conv_layer_index = -2, num_samples=100) -> None:
     """Optimized Score-CAM heatmap for a binary classification model (defective vs. not defective).
 
     Parameters
@@ -45,7 +45,6 @@ def show_scorecam(model, image: torch.Tensor, conv_layer_index, device, num_samp
     with torch.no_grad():
         output = model(image)  # No sigmoid, since it's already applied inside the model
         prob = output.item()
-        target_label = "Defective" if prob > 0.5 else "Not Defective"
 
     # Remove hook to free memory
     hook.remove()
@@ -98,18 +97,10 @@ def show_scorecam(model, image: torch.Tensor, conv_layer_index, device, num_samp
 
     # Resize final heatmap to input image size
     score_cam_resized = cv2.resize(score_cam.cpu().numpy(), (image.shape[3], image.shape[2]))
+    score_cam_thresholded = score_cam_resized > threshold
 
     # Free memory
     del act, scores, score_cam
     torch.cuda.empty_cache()
 
-    # Plot results
-    fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-    ax[0].imshow(image.cpu().squeeze().permute(1, 2, 0))
-    ax[0].set_title("Input Image")
-
-    ax[1].imshow(image.cpu().squeeze().permute(1, 2, 0))
-    ax[1].imshow(score_cam_resized, cmap='jet', alpha=0.5)
-    ax[1].set_title(f"Score-CAM Heatmap ({target_label}, Prob: {prob:.2f})")
-
-    plt.show()
+    return score_cam_resized, score_cam_thresholded

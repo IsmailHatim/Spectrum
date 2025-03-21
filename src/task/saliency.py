@@ -2,8 +2,9 @@ import torch
 import matplotlib.pyplot as plt
 
 
-def show_saliency(model, image):
+def show_saliency(model, image, device, threshold):
 
+    image = image.to(device)
     image.requires_grad = True
 
     output = model(image)
@@ -16,13 +17,9 @@ def show_saliency(model, image):
     saliency = saliency - saliency.min()
     saliency = saliency / saliency.max()
     
+    saliency = saliency.cpu().squeeze()
     image = image.detach()
     
-    _, ax = plt.subplots(1, 2, figsize=(10, 5))
-    ax[0].imshow(image.cpu().squeeze().permute(1, 2, 0))
-    ax[0].set_title("Input Image")
+    saliency_thresholded = saliency > threshold
 
-    ax[1].imshow(image.cpu().squeeze().permute(1, 2, 0))
-    ax[1].imshow(saliency.squeeze().cpu(), cmap='jet', alpha=0.5)
-
-    plt.show()
+    return saliency, saliency_thresholded

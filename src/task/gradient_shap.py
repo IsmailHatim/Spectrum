@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 
-def show_gradient_shap(model, image: torch.Tensor, device, num_samples=50) -> None:
+def show_gradient_shap(model, image: torch.Tensor, device, threshold, num_samples=50) -> None:
     """Shows GradientSHAP heatmap for the prediction of an input image.
 
     Parameters
@@ -25,7 +25,6 @@ def show_gradient_shap(model, image: torch.Tensor, device, num_samples=50) -> No
     
     model.eval()
     image = image.to(device)
-    prob = model(image).item()
 
     # Use GradientSHAP explainer
     explainer = shap.GradientExplainer(model, torch.randn(1, 3, 256, 256).to(device))
@@ -42,14 +41,6 @@ def show_gradient_shap(model, image: torch.Tensor, device, num_samples=50) -> No
     shap_heatmap /= shap_heatmap.max()
 
     shap_heatmap_resized = cv2.resize(shap_heatmap, (image.shape[2], image.shape[3]))
+    shap_heatmap_thresholded = shap_heatmap_resized > threshold
 
-    # Plot the result
-    fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-    ax[0].imshow(image.cpu().squeeze().permute(1, 2, 0))
-    ax[0].set_title("Input Image")
-
-    ax[1].imshow(image.cpu().squeeze().permute(1, 2, 0))
-    ax[1].imshow(shap_heatmap_resized, cmap='jet', alpha=0.5)
-    ax[1].set_title(f"GradientSHAP Heatmap (Defective Prob: {prob*100:.1f}%)")
-
-    plt.show()
+    return shap_heatmap_resized, shap_heatmap_thresholded
