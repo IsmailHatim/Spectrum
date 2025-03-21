@@ -7,7 +7,7 @@ import time
 import torchvision.transforms as transforms
 from argparse import ArgumentParser
 from src.data.dataset import DAGMDataset
-from src.models.models import DenseNetClassifier
+from src.models.models import DenseNetClassifier, ResNetClassifier
 from src.utils.eval import compute_iou_score, compute_f1_score, compute_auc_score
 
 
@@ -31,8 +31,14 @@ def main(args):
     image, label, label_image = test_dataset[INDEX][0].unsqueeze(0), test_dataset[INDEX][1], test_dataset[INDEX][2].unsqueeze(0)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = DenseNetClassifier(pretrained=True, device=device)
-    model.load_model(MODEL_PATH)
+    # Initialize model
+    if args.model_name == "densenet121":
+        model = DenseNetClassifier(pretrained=True, device=device)
+    elif args.model_name == "resnet50":
+        model = ResNetClassifier(pretrained=True, device=device)
+    else:
+        raise ValueError(f"Model {args.model_name} is not supported yet.")
+    
     model.eval()
     output = model(image.to(device))
     prob = output.item()
@@ -45,13 +51,13 @@ def main(args):
 
     iou_score = compute_iou_score(explanation_thresholded, label_image)
     f1_score = compute_f1_score(explanation_thresholded, label_image)
-    auc_score = compute_auc_score(explanation, label_image)
+    # auc_score = compute_auc_score(explanation, label_image)
     
     print("+" + "-" * 50 + "+")
     print(f'True Label: {label}')
     print(f"IoU Score : {iou_score}")
     print(f"F1 Score : {f1_score}")
-    print(f"ROC AUC Score : {auc_score}")
+    # print(f"ROC AUC Score : {auc_score}")
     print(f"Execution Time : {execution_time:.4f} seconds")
     print("+" + "-" * 50 + "+")
 
