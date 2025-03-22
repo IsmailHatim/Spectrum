@@ -40,6 +40,7 @@ def main(args):
     iou_scores = []
     f1_scores = []
     auc_scores = []
+    execution_times = []
 
     for batch in tqdm(test_loader):
 
@@ -60,6 +61,7 @@ def main(args):
                 iou_scores.append(iou_score)
                 f1_scores.append(f1_score)
                 auc_scores.append(auc_score)
+                execution_times.append(execution_time)
 
                 if args.method == 'saliency':
                     image = image.detach()
@@ -77,6 +79,8 @@ def main(args):
     print(f"Standard Deviation F1 Score : {np.std(f1_scores)}")
     print(f"Average ROC AUC Score : {sum(auc_scores)/len(auc_scores)}")
     print(f"Standard Deviation ROC AUC Score : {np.std(auc_scores)}")
+    print(f"Average Execution Time : {sum(execution_times)/len(execution_times)}")
+    print(f"Standard Deviation Execution Time : {np.std(execution_times)}")
 
 if __name__ == "__main__":
     parser = ArgumentParser(description='Run selected explanation method on DAGM Dataset.')
