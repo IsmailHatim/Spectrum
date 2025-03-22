@@ -19,8 +19,12 @@ def compute_f1_score(heatmap, ground_truth):
 
 def compute_auc_score(heatmap, ground_truth):
 
-    ground_truth = np.array(ground_truth[0]).flatten()
+    heatmap = np.array(heatmap)
+    ground_truth = np.array(ground_truth[0, 0])
+
+    heatmap_flat = heatmap.flatten()
+    ground_truth_flatten = ground_truth.flatten()
+
+    auc_score = roc_auc_score(heatmap_flat, ground_truth_flatten)
     
-    heatmap = np.array(heatmap).flatten()
-    score = roc_auc_score(ground_truth, heatmap)
-    return round(score, 2)
+    return auc_score
