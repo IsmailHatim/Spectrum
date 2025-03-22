@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
 
-def show_scorecam(model, image: torch.Tensor, device, threshold=0.5, conv_layer_index=-2) -> None:
+def show_scorecam(model, image: torch.Tensor, device, threshold=0.5, conv_layer_index=-2):
     """Optimized Score-CAM heatmap for a binary classification model (defective vs. not defective).
 
     Parameters

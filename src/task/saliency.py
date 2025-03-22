@@ -2,7 +2,7 @@ import torch
 import matplotlib.pyplot as plt
 
 
-def show_saliency(model, image, device, threshold=0.5, conv_layer_index=-2):
+def show_saliency(model, image, device, threshold=0.5, conv_layer_index=None):
     """Shows saliency map for the prediction of an input image."
 
     Parameters

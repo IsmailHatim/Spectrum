@@ -3,7 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
 
-def show_gradcam(model, image: torch.Tensor, device, threshold=0.5, conv_layer_index=-2) -> None:
+def show_gradcam(model, image: torch.Tensor, device, threshold=0.5, conv_layer_index=-2):
     """Shows Grad-CAM heatmap for the prediction of an input image using the last conv layer of DenseNet.
 
     Parameters
