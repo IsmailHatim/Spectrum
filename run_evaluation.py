@@ -42,7 +42,7 @@ def main(args):
     auc_scores = []
     execution_times = []
 
-    for batch in tqdm(test_loader):
+    for idx, batch in enumerate(tqdm(test_loader)):
 
         image, label, label_image = batch
         if label ==1:
@@ -53,7 +53,7 @@ def main(args):
             execution_time = end_time - start_time
 
             print("+" + "-" * 50 + "+")
-            print(f'True Label: {label}')
+            print(f'True Label: {label}, Index : {idx}')
             if args.method != "lime":
                 iou_score = compute_iou_score(explanation_thresholded, label_image)
                 f1_score = compute_f1_score(explanation_thresholded, label_image)
@@ -61,15 +61,17 @@ def main(args):
                 iou_scores.append(iou_score)
                 f1_scores.append(f1_score)
                 auc_scores.append(auc_score)
-                execution_times.append(execution_time)
+                
 
                 if args.method == 'saliency':
-                    image = image.detach()
+                    image_input = image.clone().detach().requires_grad_(True)
                 
                 
                 print(f"IoU Score : {iou_score}")
                 print(f"F1 Score : {f1_score}")
                 print(f"ROC AUC Score : {auc_score:.2f}")
+            
+            execution_times.append(execution_time)
             print(f"Execution Time : {execution_time:.4f} seconds")
             print("+" + "-" * 50 + "+")
 
