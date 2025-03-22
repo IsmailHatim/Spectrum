@@ -1,5 +1,9 @@
 # Spectrum xAI: Explainability Pipeline for Deep Learning Models
 
+![Pipeline Overview](https://github.com/IsmailHatim/Spectrum/blob/master/data/figures/pipeline.jpg)
+
+## Overview
+
 Spectrum xAI is a comprehensive pipeline for explainability in artificial intelligence. It provides a suite of state-of-the-art explainability methods to analyze and interpret deep learning models. The pipeline supports evaluation metrics such as IoU, F1-Score, AUC, and execution time, along with visualizations for better understanding of model predictions.
 
 ## Features
