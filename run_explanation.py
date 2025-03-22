@@ -7,7 +7,7 @@ import time
 import torchvision.transforms as transforms
 from argparse import ArgumentParser
 from src.data.dataset import DAGMDataset
-from src.models.models import DenseNetClassifier, ResNetClassifier
+from src.models.models import DenseNetClassifier
 from src.utils.eval import compute_iou_score, compute_f1_score, compute_auc_score
 
 
@@ -29,18 +29,10 @@ def main(args):
     test_dataset = DAGMDataset(root_dir=IMAGE_PATH, split="Test", transform=transform)
 
     image, label, label_image = test_dataset[INDEX][0].unsqueeze(0), test_dataset[INDEX][1], test_dataset[INDEX][2].unsqueeze(0)
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     # Initialize model
-    if args.model_name == "densenet121":
-        model = DenseNetClassifier(pretrained=True, device=device)
-    elif args.model_name == "resnet50":
-        model = ResNetClassifier(pretrained=True, device=device)
-    else:
-        raise ValueError(f"Model {args.model_name} is not supported yet.")
-    
-    
-    
+    model = DenseNetClassifier(model_name=args.model_name, pretrained=True, device=device)
     model.load_model(MODEL_PATH)
     
     model.eval()
@@ -48,7 +40,7 @@ def main(args):
     prob = output.item()
 
     start_time = time.perf_counter()
-    explanation, explanation_thresholded = method(model.model, image, device, threshold=args.threshold)
+    explanation, explanation_thresholded = method(model.model, image, device, threshold=args.threshold, conv_layer_index=args.conv_layer_index)
     end_time = time.perf_counter()
 
     execution_time = end_time - start_time
@@ -68,19 +60,20 @@ def main(args):
     print(f"Execution Time : {execution_time:.4f} seconds")
     print("+" + "-" * 50 + "+")
 
-    fig, ax = plt.subplots(1, 4, figsize=(10, 5))
+    _, ax = plt.subplots(1, 4, figsize=(10, 5))
     ax[0].imshow(image.cpu().squeeze().permute(1, 2, 0))
     ax[0].set_title("Input Image")
 
     ax[1].imshow(image.cpu().squeeze().permute(1, 2, 0))
     ax[1].imshow(explanation, cmap='jet', alpha=0.5)
-    ax[1].set_title(f"{args.method.capitalize()} (Defective Prob: {prob*100:.1f}%)")
+    ax[1].set_title(f"{args.method.capitalize()} Prob: {prob*100:.1f}%")
+    ax[1].legend()
 
     ax[2].imshow(explanation_thresholded, cmap='gray')
-    ax[2].set_title(f"{args.method.capitalize()} Thresholded Mask")
+    ax[2].set_title(f"Thresholded Mask")
 
     ax[3].imshow(label_image.squeeze().permute(1, 2, 0))
-    ax[3].set_title(f"{args.method.capitalize()} Ground Truth")
+    ax[3].set_title(f"Ground Truth")
 
     plt.show()
 
@@ -93,6 +86,7 @@ if __name__ == "__main__":
     parser.add_argument('--threshold', default='0.5', type=float, help='Threshold used to compute binary mask')
     parser.add_argument('--img_class', default='1', type=int, help='Image class from DAGM Dataset')
     parser.add_argument('--model_name', default='densenet121', type=str, help='Model name to use')
+    parser.add_argument('--conv_layer_index', default=-2, type=int, help='Index of the convolutional layer to analyze')
 
     args = parser.parse_args()
     
