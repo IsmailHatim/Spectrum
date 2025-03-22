@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 
-def show_gradient_shap(model, image: torch.Tensor, device, threshold=0.5, num_samples=50, conv_layer_index=None):
+def show_gradient_shap(model, image: torch.Tensor, device, threshold=0.5, num_samples=100, conv_layer_index=None):
     """Shows GradientSHAP heatmap for the prediction of an input image.
 
     Parameters

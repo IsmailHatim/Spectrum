@@ -15,8 +15,9 @@ from src.utils.eval import compute_iou_score, compute_f1_score, compute_auc_scor
 sys.dont_write_bytecode = True
 
 def main(args):
-    IMAGE_PATH = f"data/dataset/Class{args.img_class}/"
-    MODEL_PATH = f"data/models/model_{args.model_name}_class{args.img_class}.pth"
+    CLASS = 1
+    IMAGE_PATH = f"data/dataset/Class{CLASS}/"
+    MODEL_PATH = f"data/models/model_{args.model_name}_class{CLASS}.pth"
     INDEX = args.index
 
     method = getattr(importlib.import_module(f"src.task.{args.method}"), f"show_{args.method}")
@@ -26,7 +27,6 @@ def main(args):
         transforms.ToTensor(),
     ])
 
-    train_dataset = DAGMDataset(root_dir=IMAGE_PATH, split="Train", transform=transform)
     test_dataset = DAGMDataset(root_dir=IMAGE_PATH, split="Test", transform=transform)
 
     image, label, label_image = test_dataset[INDEX][0].unsqueeze(0), test_dataset[INDEX][1], test_dataset[INDEX][2].unsqueeze(0)
@@ -61,7 +61,7 @@ def main(args):
         print(f"Execution Time : {execution_time:.4f} seconds")
         print("+" + "-" * 50 + "+")
 
-        _, ax = plt.subplots(1, 4, figsize=(10, 5))
+        fig, ax = plt.subplots(1, 4, figsize=(10, 5))
         ax[0].imshow(image.cpu().squeeze().permute(1, 2, 0))
         ax[0].set_title("Input Image")
 
@@ -91,7 +91,10 @@ def main(args):
         
         ax[2].imshow(label_image.squeeze().permute(1, 2, 0))
         ax[2].set_title(f"Ground Truth")
-
+        
+    if args.save:
+        fig.savefig(f"data/figures/{args.method}_explanation_{args.model_name}_class{CLASS}.png")
+    plt.tight_layout()
     plt.show()
 
 
@@ -101,9 +104,9 @@ if __name__ == "__main__":
     parser.add_argument('--method', default='gradcam', type=str, help='Explanation method to use')
     parser.add_argument('--index', default='0', type=int, help='Image index from DAGM Dataset')
     parser.add_argument('--threshold', default='0.5', type=float, help='Threshold used to compute binary mask')
-    parser.add_argument('--img_class', default='1', type=int, help='Image class from DAGM Dataset')
     parser.add_argument('--model_name', default='densenet121', type=str, help='Model name to use')
     parser.add_argument('--conv_layer_index', default=-2, type=int, help='Index of the convolutional layer to analyze')
+    parser.add_argument('--save', action='store_true', help='Save visualization')
 
     args = parser.parse_args()
     
