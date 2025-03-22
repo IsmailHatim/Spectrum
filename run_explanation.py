@@ -82,14 +82,15 @@ def main(args):
         print("+" + "-" * 50 + "+")
         print(f'True Label: {label}')
 
-        fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+        fig, ax = plt.subplots(1, 3, figsize=(10, 5))
         ax[0].imshow(image.cpu().squeeze().permute(1, 2, 0))
         ax[0].set_title("Input Image")
         
         ax[1].imshow(mark_boundaries(explanation, explanation_thresholded))
-        ax[1].set_title("LIME Explanation")
+        ax[1].set_title(f"LIME Prob: {prob*100:.1f}%")
         
-        plt.show()
+        ax[2].imshow(label_image.squeeze().permute(1, 2, 0))
+        ax[2].set_title(f"Ground Truth")
 
     plt.show()
 
