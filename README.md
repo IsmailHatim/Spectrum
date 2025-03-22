@@ -42,22 +42,28 @@ Spectrum xAI is a comprehensive pipeline for explainability in artificial intell
    pip install -r requirements.txt
    ```
 
-3. Ensure you have the DAGM dataset in the `data/dataset/` directory, organized by class.
+3. Ensure you have the DAGM dataset in the `data/dataset/` directory. You can download it from the [Kaggle Challenge](https://www.kaggle.com/datasets/mhskjelvareid/dagm-2007-competition-dataset-optical-inspection)
 
 ## Usage
 
 ### Training a Model
 
-To train a model (e.g., DenseNet121) on a specific class of the DAGM dataset:
+To train a model (e.g., DenseNet121) on the first class of the DAGM dataset:
 ```bash
-python run_training.py --model_name densenet121 --img_class 1 --epochs 10 --batch_size 32 --learning_rate 0.0001 --plot
+python run_training.py --model_name densenet121 --epochs 10 --batch_size 32 --learning_rate 0.0001 --plot
 ```
 
 ### Running Explainability Methods
 
-To run an explainability method (e.g., Grad-CAM) on a trained model:
+To run an explainability method (e.g., Grad-CAM) on a trained model and save figures:
 ```bash
-python run_explanation.py --method gradcam --index 0 --threshold 0.5 --img_class 1 --model_name densenet121 --conv_layer_index -2
+python run_explanation.py --method gradcam --index 0 --threshold 0.5 --model_name densenet121 --conv_layer_index -2 --save
+```
+### Running Evaluation
+
+To run the whole evluation using a specific method (e.g., Grad-CAM) on a trained model:
+```bash
+python run_evaluation.py --method gradcam --threshold 0.5 --model_name densenet121 --conv_layer_index -2
 ```
 
 ## Pipeline Overview
@@ -82,39 +88,25 @@ python run_explanation.py --method gradcam --index 0 --threshold 0.5 --img_class
 
 1. Train a DenseNet121 model on Class 1 of the DAGM dataset:
    ```bash
-   python run_training.py --model_name densenet121 --img_class 1 --epochs 10 --batch_size 32 --learning_rate 0.0001 --plot
+   python run_training.py --model_name densenet121 --epochs 10 --batch_size 32 --learning_rate 0.0001 --plot
    ```
 
 2. Run Grad-CAM on the trained model:
    ```bash
-   python run_explanation.py --method gradcam --index 0 --threshold 0.5 --img_class 1 --model_name densenet121 --conv_layer_index -2
+   python run_explanation.py --method gradcam --index 0 --threshold 0.5 --model_name densenet121 --conv_layer_index -2 --save
    ```
 
-3. Visualize the results:
+3. Run evluation using Grad-CAM on the whole test set:
+   ```bash
+   python run_evaluation.py --method gradcam --threshold 0.5 --model_name densenet121 --conv_layer_index -2
+   ```
+
+4. Visualize the results:
    - Input image
    - Grad-CAM heatmap
    - Thresholded mask
    - Ground truth
-
-## Directory Structure
-
-```
-Spectrum/
-├── data/
-│   ├── dataset/          # DAGM dataset
-│   ├── models/           # Trained models
-│   ├── figures/          # Training metrics and visualizations
-├── src/
-│   ├── data/             # Dataset loading utilities
-│   ├── models/           # Model definitions and training scripts
-│   ├── task/             # Explainability methods
-│   ├── utils/            # Evaluation metrics
-├── run_training.py       # Script for training models
-├── run_explanation.py    # Script for running explainability methods
-├── requirements.txt      # Python dependencies
-├── README.md             # Project documentation
-└── main.ipynb            # Interactive notebook
-```
+   - Mean and Standard Deviation metrics
 
 ## Future Work
 
