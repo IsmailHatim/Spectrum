@@ -28,8 +28,13 @@ def show_gradcam(model, image: torch.Tensor, device, threshold=0.5, conv_layer_i
 
     def backward_hook(module, grad_input, grad_output):
         gradients.append(grad_output[0].clone())
-        
-    layer = model.features[conv_layer_index]
+    
+    if model._get_name() == "DenseNet":
+        layer = model.features[conv_layer_index]
+    elif model._get_name() == "ResNet":
+        layer = model.layer4[conv_layer_index]
+    else:
+        raise ValueError("Model not supported. Choose DenseNet or ResNet.")
 
     layer.register_forward_hook(forward_hook)
     layer.register_backward_hook(backward_hook)

@@ -36,7 +36,13 @@ def show_scorecam(model, image: torch.Tensor, device, threshold, conv_layer_inde
         activation = output.detach()
 
     # Hook into the target convolutional layer
-    layer = model.features[conv_layer_index]
+    if model._get_name() == "DenseNet":
+        layer = model.features[conv_layer_index]
+    elif model._get_name() == "ResNet":
+        layer = model.layer4[conv_layer_index]
+    else:
+        raise ValueError("Model not supported. Choose DenseNet or ResNet.")
+
     hook = layer.register_forward_hook(forward_hook)
 
     model.eval()
@@ -44,7 +50,6 @@ def show_scorecam(model, image: torch.Tensor, device, threshold, conv_layer_inde
     # Forward pass to get model prediction
     with torch.no_grad():
         output = model(image)  # No sigmoid, since it's already applied inside the model
-        prob = output.item()
 
     # Remove hook to free memory
     hook.remove()
