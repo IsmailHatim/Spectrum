@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import time
 
 from src.data.dataset import DAGMDataset
-from src.models.models import DenseNetClassifier, ResNetClassifier
+from src.models.models import DenseNetClassifier
 from src.models.train_model import train_model
 from src.models.evaluation import evaluate_model
 
@@ -18,7 +18,7 @@ def main(args):
     
     # Setup paths
     IMAGE_PATH = f"data/dataset/Class{args.img_class}/"
-    MODEL_PATH = f"data/models/model_{args.model_name}_class{args.img_class}.pth"
+    MODEL_PATH = f"data/models/test_model_{args.model_name}_class{args.img_class}.pth"
     
     # Setup device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -40,12 +40,7 @@ def main(args):
     print(f"Test dataset size: {len(test_dataset)}")
     
     # Initialize model
-    if args.model_name == "densenet121":
-        model = DenseNetClassifier(pretrained=True, device=device)
-    elif args.model_name == "resnet50":
-        model = ResNetClassifier(pretrained=True, device=device)
-    else:
-        raise ValueError(f"Model {args.model_name} is not supported yet.")
+    model = DenseNetClassifier(model_name=args.model_name, pretrained=True, device=device)
     
     # Setup training parameters
     criterion = torch.nn.BCEWithLogitsLoss()

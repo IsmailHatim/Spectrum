@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import cv2
 from captum.attr import IntegratedGradients
 
-def show_integrated_gradient(model, image: torch.Tensor, device, threshold, baseline_type="black", n_steps=50) -> None:
+def show_integrated_gradient(model, image: torch.Tensor, device, threshold=0.5, baseline_type="black", n_steps=50, conv_layer_index=None):
     """Shows Integrated Gradients heatmap for the prediction of an input image using a ResNet model.
 
     Parameters
@@ -18,6 +18,8 @@ def show_integrated_gradient(model, image: torch.Tensor, device, threshold, base
         Image used for Integrated Gradients.
     device : torch.device
         Device (CPU/GPU) on which the model is running.
+    threshold : float, optional
+        Threshold for binarizing the Integrated Gradients heatmap.
     baseline_type : str, optional
         Type of baseline image ("black" for a black image, "random" for a random noise image).
     n_steps : int, optional
@@ -25,7 +27,10 @@ def show_integrated_gradient(model, image: torch.Tensor, device, threshold, base
 
     Returns
     -------
-    None
+    gradcam_resized : np.ndarray
+        Integrated Gradients heatmap.
+    gradcam_thresholded : np.ndarray
+        Thresholded Integrated Gradients heatmap.
     """
     
     model.eval()

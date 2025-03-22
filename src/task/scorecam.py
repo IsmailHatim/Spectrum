@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
 
-def show_scorecam(model, image: torch.Tensor, device, threshold, conv_layer_index = -2, num_samples=100) -> None:
+def show_scorecam(model, image: torch.Tensor, device, threshold=0.5, conv_layer_index=-2):
     """Optimized Score-CAM heatmap for a binary classification model (defective vs. not defective).
 
     Parameters
@@ -17,18 +17,18 @@ def show_scorecam(model, image: torch.Tensor, device, threshold, conv_layer_inde
         Index of the convolutional layer to analyze.
     device : torch.device
         Device (CPU/GPU) on which the model is running.
-    num_samples : int, optional
-        Number of perturbations for Score-CAM estimation (default is 100).
+    threshold : float, optional
+        Threshold for binarizing the Score-CAM heatmap.
 
     Returns
     -------
-    None
+    score_cam_resized : np.ndarray
+        Score-CAM heatmap.
+    score_cam_thresholded : np.ndarray
+        Thresholded Score-CAM heatmap
     """
 
-    # Move image to device
     image = image.to(device, non_blocking=True)
-
-    # Function to store activations
     activation = None
 
     def forward_hook(module, input, output):
@@ -37,14 +37,13 @@ def show_scorecam(model, image: torch.Tensor, device, threshold, conv_layer_inde
 
     # Hook into the target convolutional layer
     layer = model.features[conv_layer_index]
+
     hook = layer.register_forward_hook(forward_hook)
 
     model.eval()
 
-    # Forward pass to get model prediction
     with torch.no_grad():
-        output = model(image)  # No sigmoid, since it's already applied inside the model
-        prob = output.item()
+        output = model(image)
 
     # Remove hook to free memory
     hook.remove()
