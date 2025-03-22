@@ -46,7 +46,7 @@ def main(args):
         image, label, label_image = batch
         if label ==1:
             start_time = time.perf_counter()
-            explanation, explanation_thresholded = method(model.model, image, device, threshold=args.threshold, conv_layer_index=args.conv_layer_index)
+            _, explanation_thresholded = method(model.model, image, device, threshold=args.threshold, conv_layer_index=args.conv_layer_index)
             end_time = time.perf_counter()
 
             execution_time = end_time - start_time
@@ -56,10 +56,10 @@ def main(args):
             if args.method != "lime":
                 iou_score = compute_iou_score(explanation_thresholded, label_image)
                 f1_score = compute_f1_score(explanation_thresholded, label_image)
-                # auc_score = compute_auc_score(explanation, label_image)
+                auc_score = compute_auc_score(explanation_thresholded, label_image)
                 iou_scores.append(iou_score)
                 f1_scores.append(f1_score)
-                # auc_scores.append(auc_score)
+                auc_scores.append(auc_score)
 
                 if args.method == 'saliency':
                     image = image.detach()
@@ -67,7 +67,7 @@ def main(args):
                 
                 print(f"IoU Score : {iou_score}")
                 print(f"F1 Score : {f1_score}")
-                # print(f"ROC AUC Score : {auc_score}")
+                print(f"ROC AUC Score : {auc_score:.2f}")
             print(f"Execution Time : {execution_time:.4f} seconds")
             print("+" + "-" * 50 + "+")
 
@@ -75,8 +75,8 @@ def main(args):
     print(f"Standard Deviation IoU Score : {np.std(iou_scores)}")
     print(f"Average F1 Score : {sum(f1_scores)/len(f1_scores)}")
     print(f"Standard Deviation F1 Score : {np.std(f1_scores)}")
-    # print(f"Average ROC AUC Score : {sum(auc_scores)/len(auc_scores)}")
-    # print(f"Standard Deviation ROC AUC Score : {np.std(auc_scores)}")
+    print(f"Average ROC AUC Score : {sum(auc_scores)/len(auc_scores)}")
+    print(f"Standard Deviation ROC AUC Score : {np.std(auc_scores)}")
 
 if __name__ == "__main__":
     parser = ArgumentParser(description='Run selected explanation method on DAGM Dataset.')

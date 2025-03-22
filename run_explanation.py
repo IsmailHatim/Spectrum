@@ -48,7 +48,7 @@ def main(args):
     if args.method != "lime":
         iou_score = compute_iou_score(explanation_thresholded, label_image)
         f1_score = compute_f1_score(explanation_thresholded, label_image)
-        # auc_score = compute_auc_score(explanation, label_image)
+        auc_score = compute_auc_score(explanation_thresholded, label_image)
         
         if args.method == 'saliency':
             image = image.detach()
@@ -57,7 +57,7 @@ def main(args):
         print(f'True Label: {label}')
         print(f"IoU Score : {iou_score}")
         print(f"F1 Score : {f1_score}")
-        # print(f"ROC AUC Score : {auc_score}")
+        print(f"ROC AUC Score : {auc_score:.2f}")
         print(f"Execution Time : {execution_time:.4f} seconds")
         print("+" + "-" * 50 + "+")
 
