@@ -18,10 +18,8 @@ Spectrum xAI is a comprehensive pipeline for explainability in artificial intell
   - Area Under the Curve (AUC)
   - Execution Time
 
-- **Supported Models**:
+- **Supported Model**:
   - DenseNet (fully implemented)
-  - Visual Transformers (in progress)
-  - ResNet (in progress)
 
 - **Visualization**:
   - Heatmaps and thresholded masks for each explainability method.
@@ -46,7 +44,7 @@ Spectrum xAI is a comprehensive pipeline for explainability in artificial intell
 
 ### Training a Model
 
-To train a model (e.g., DenseNet) on a specific class of the DAGM dataset:
+To train a model (e.g., DenseNet121) on a specific class of the DAGM dataset:
 ```bash
 python run_training.py --model_name densenet121 --img_class 1 --epochs 10 --batch_size 32 --learning_rate 0.0001 --plot
 ```
@@ -55,7 +53,7 @@ python run_training.py --model_name densenet121 --img_class 1 --epochs 10 --batc
 
 To run an explainability method (e.g., Grad-CAM) on a trained model:
 ```bash
-python run_explanation.py --method gradcam --index 0 --threshold 0.5 --img_class 1 --model_name densenet121
+python run_explanation.py --method gradcam --index 0 --threshold 0.5 --img_class 1 --model_name densenet121 --conv_layer_index -2
 ```
 
 ## Pipeline Overview
@@ -64,7 +62,7 @@ python run_explanation.py --method gradcam --index 0 --threshold 0.5 --img_class
    - The pipeline uses the DAGM dataset, which is divided into training and testing splits for each class.
 
 2. **Model Training**:
-   - Train models like DenseNet, ResNet, and Visual Transformers on the dataset.
+   - Train models like DenseNet121, on the dataset.
    - Save trained models for later use.
 
 3. **Explainability Methods**:
@@ -78,14 +76,14 @@ python run_explanation.py --method gradcam --index 0 --threshold 0.5 --img_class
 
 ## Example Workflow
 
-1. Train a DenseNet model on Class 1 of the DAGM dataset:
+1. Train a DenseNet121 model on Class 1 of the DAGM dataset:
    ```bash
    python run_training.py --model_name densenet121 --img_class 1 --epochs 10 --batch_size 32 --learning_rate 0.0001 --plot
    ```
 
 2. Run Grad-CAM on the trained model:
    ```bash
-   python run_explanation.py --method gradcam --index 0 --threshold 0.5 --img_class 1 --model_name densenet121
+   python run_explanation.py --method gradcam --index 0 --threshold 0.5 --img_class 1 --model_name densenet121 --conv_layer_index -2
    ```
 
 3. Visualize the results:
@@ -116,11 +114,8 @@ Spectrum/
 
 ## Future Work
 
-- **Model Support**:
-  - Add support for Visual Transformers and ResNet.
-
 - **Explainability Methods**:
-  - Extend the pipeline with additional explainability methods.
+  - Extend the pipeline with additional explainability methods and other models.
 
 - **Dataset Support**:
   - Generalize the pipeline to work with other datasets.
